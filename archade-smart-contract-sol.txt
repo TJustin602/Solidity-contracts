@@ -1,0 +1,38 @@
+pragma solidity ^0.5.0;
+
+import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
+
+contract arcadetoken {
+    using SafeMath for uint; // this is using the SafeMath and apply it to all the unit's 
+    
+  address payable owner = msg.sender; // whoever deploys this contract is the owner and only runs the first time you deploy. otherwise use the account address that you can get in ganasche
+  string public symbol ="ARCD"; // allowing anyone to look at this .. private only certain addresses or private keys can pull. most times its public. 
+  uint public exchange_rate = 100; // for every unit of ethereum ( wei) for every one wei, we're gonna give 100 tokens. 
+  // advanced contracts, the exchange rate is variable ... like when it comes to life / deployed 
+  
+  mapping(address => uint) balances; // this address is going to have a varialble call balances that is a uint type 
+
+function balance() public view returns(uint) {
+    return balances[msg.sender];
+}
+    
+    function transfer(address recipient, uint SENDamount) public {
+        balances[msg.sender] = balances[msg.sender].sub(SENDamount); // use the .sub from the imported safemath  
+        // the new amount is going to be the previous amount minus howevermuch i want to send  
+        // could be balances[msg.sender] = balances[msg.sender] - SENDamount
+        balances[recipient] = balances[recipient].add(SENDamount); //use the .sub from the imported safemath 
+        
+    }
+    
+    function purchase() public payable { //they are gonna send ethereum
+        uint amount = msg.value * exchange_rate; // get the right amount based on our exchanged rate 
+        balances[msg.sender] = balances[msg.sender].add(amount); // use the safemath 
+        owner.transfer(msg.value);
+    }
+    
+    function mint(address recipient, uint MINTamount) public{
+        // create tokens and put them to a certain address
+        require(msg.sender == owner, "You dont have permission");
+        balances[recipient] += MINTamount; //give this mount to the recipient.. the minted arcaded tokens. 
+    }
+}

@@ -1,0 +1,24 @@
+pragma solidity ^0.5.0;
+
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Detailed.sol";
+
+contract ArcadeToken is ERC20, ERC20Detailed { //this is setting the 'standards' of the EIPs ERC20 
+    address payable owner;
+
+    modifier onlyOwner { //allows us to create a variable that help define what the functions, below, will use. 
+    // it requires the msg.sender to be the owner , the owner is whomever deployed the contract 
+        require(msg.sender == owner, "You do not have permission to mint these tokens!");
+        _; // this is needed below.. ? this underscore is stating its not doing anything, marking it that it is ok. like without a body . 
+    }
+
+    constructor(uint initial_supply) ERC20Detailed("ArcadeToken", "ARCD", 18) public { // constructor will ask for variables first time deploy. what do you want to initalize. 
+        // 18 is how many decimal places to you want in the token. 18 is a default. 
+        owner = msg.sender; // owner is whoever deploys the contract. 
+        _mint(owner, initial_supply); // mint is in the erc20.sol 
+    }
+
+    function mint(address recipient, uint amount) public onlyOwner { //this gives us a button to interact with the _mint function and make sure it's the contract owner 
+        _mint(recipient, amount);
+    }
+}
